@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ImpHunter2021.GameStates;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -25,8 +26,9 @@ namespace ImpHunter
             ApplyResolutionSettings();
 
             // TODO: use this.Content to load your game content here
-
+            GameStateManager.AddGameState("playingState", new PlayingState());
+            GameStateManager.SwitchTo("playingState");
         }
-        
+
     }
 }
