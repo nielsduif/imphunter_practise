@@ -9,6 +9,7 @@ namespace ImpHunter2021.GameObjects
     {
         Vector2 startPos;
         int speedHor = 50, speedVer = 0;
+        int fallSpeed = 150;
         public Guard(Vector2 _startPos, string _assetName = "spr_guard") : base(_assetName)
         {
             startPos = _startPos;
@@ -25,6 +26,11 @@ namespace ImpHunter2021.GameObjects
         public void Bounce()
         {
             velocity.X *= -1;
+        }
+
+        public void Fall()
+        {
+            velocity.Y = fallSpeed;
         }
     }
 }

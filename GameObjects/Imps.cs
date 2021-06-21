@@ -22,6 +22,10 @@ namespace ImpHunter2021.GameObjects
             base.Update(gameTime);
             Velocity += new Vector2(GameEnvironment.Random.Next(randomHorShiv[0], randomHorShiv[1]), 0);
             AngularDirection = velocity;
+            if (LeaveBottom())
+            {
+                Reset();
+            }
         }
 
         public override void Reset()
@@ -34,6 +38,16 @@ namespace ImpHunter2021.GameObjects
         public void Die()
         {
             Velocity = new Vector2(0, dieSpeed);
+        }
+
+        public bool LeaveTop()
+        {
+            return (position.Y < -Center.Y);
+        }
+
+        bool LeaveBottom()
+        {
+            return (position.Y > GameEnvironment.Screen.Y + Center.Y);
         }
     }
 }

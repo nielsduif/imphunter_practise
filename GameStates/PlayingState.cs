@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ImpHunter2021.GameStates
@@ -13,14 +14,18 @@ namespace ImpHunter2021.GameStates
         int impAmount = 3;
         GameObjectList guards;
         int guardAmount = 3;
+        int[] guardPositionXYOffset = { 170, 490, 150 };
         SpriteGameObject walls;
         public PlayingState()
         {
             Add(new SpriteGameObject("spr_background"));
 
-            Add(walls = new SpriteGameObject("spr_towers"));
-
-            Add(ch = new Crosshair());
+            guards = new GameObjectList();
+            for (int i = 0; i < guardAmount; i++)
+            {
+                guards.Add(new Guard(new Vector2(guardPositionXYOffset[0] + guardPositionXYOffset[2] * i, guardPositionXYOffset[1])));
+            }
+            Add(guards);
 
             imps = new GameObjectList();
             for (int i = 0; i < impAmount; i++)
@@ -29,12 +34,9 @@ namespace ImpHunter2021.GameStates
             }
             Add(imps);
 
-            guards = new GameObjectList();
-            for (int i = 0; i < guardAmount; i++)
-            {
-                guards.Add(new Guard(new Vector2(170 + 150 * i, 490)));
-            }
-            Add(guards);
+            Add(walls = new SpriteGameObject("spr_towers"));
+
+            Add(ch = new Crosshair());
         }
 
         public override void Update(GameTime gameTime)
@@ -54,6 +56,37 @@ namespace ImpHunter2021.GameStates
                     if (g.CollidesWith(og))
                     {
                         g.Bounce();
+                    }
+                }
+            }
+
+            foreach (Imps imp in imps.Children)
+            {
+                if (imp.LeaveTop())
+                {
+                    foreach (Guard g in guards.Children)
+                    {
+                        if (g.Position.Y == guardPositionXYOffset[1])
+                        {
+                            imp.Reset();
+                            g.Fall();
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        public override void HandleInput(InputHelper inputHelper)
+        {
+            base.HandleInput(inputHelper);
+            if (inputHelper.MouseLeftButtonPressed())
+            {
+                foreach (Imps imp in imps.Children)
+                {
+                    if (ch.CollidesWith(imp) && !imp.CollidesWith(walls))
+                    {
+                        imp.Die();
                     }
                 }
             }
