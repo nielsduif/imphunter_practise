@@ -16,27 +16,11 @@ namespace ImpHunter2021.GameStates
         int guardAmount = 3;
         int[] guardPositionXYOffset = { 170, 490, 150 };
         SpriteGameObject walls;
+        Score score;
+        int escaped, maxEscaped = 3;
         public PlayingState()
         {
-            Add(new SpriteGameObject("spr_background"));
-
-            guards = new GameObjectList();
-            for (int i = 0; i < guardAmount; i++)
-            {
-                guards.Add(new Guard(new Vector2(guardPositionXYOffset[0] + guardPositionXYOffset[2] * i, guardPositionXYOffset[1])));
-            }
-            Add(guards);
-
-            imps = new GameObjectList();
-            for (int i = 0; i < impAmount; i++)
-            {
-                imps.Add(new Imps());
-            }
-            Add(imps);
-
-            Add(walls = new SpriteGameObject("spr_towers"));
-
-            Add(ch = new Crosshair());
+            Reset();
         }
 
         public override void Update(GameTime gameTime)
@@ -70,11 +54,46 @@ namespace ImpHunter2021.GameStates
                         {
                             imp.Reset();
                             g.Fall();
+                            escaped++;
                             return;
                         }
                     }
                 }
             }
+
+            if (escaped >= maxEscaped)
+            {
+                GameEnvironment.GameStateManager.SwitchTo("gameOverState");
+                Reset();
+            }
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
+            Add(new SpriteGameObject("spr_background"));
+
+            guards = new GameObjectList();
+            for (int i = 0; i < guardAmount; i++)
+            {
+                guards.Add(new Guard(new Vector2(guardPositionXYOffset[0] + guardPositionXYOffset[2] * i, guardPositionXYOffset[1])));
+            }
+            Add(guards);
+
+            imps = new GameObjectList();
+            for (int i = 0; i < impAmount; i++)
+            {
+                imps.Add(new Imps());
+            }
+            Add(imps);
+
+            Add(walls = new SpriteGameObject("spr_towers"));
+
+            Add(score = new Score());
+
+            Add(ch = new Crosshair());
+
+            escaped = 0;
         }
 
         public override void HandleInput(InputHelper inputHelper)
@@ -87,6 +106,7 @@ namespace ImpHunter2021.GameStates
                     if (ch.CollidesWith(imp) && !imp.CollidesWith(walls))
                     {
                         imp.Die();
+                        score.AddScore();
                     }
                 }
             }

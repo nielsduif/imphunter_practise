@@ -27,6 +27,7 @@ namespace ImpHunter
 
             // TODO: use this.Content to load your game content here
             GameStateManager.AddGameState("playingState", new PlayingState());
+            GameStateManager.AddGameState("gameOverState", new GameOverState());
             GameStateManager.SwitchTo("playingState");
         }
 
